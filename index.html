@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Validación Documento</title>
+
+  <style>
+    body {
+
+      font-family: Arial;
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+
+    }
+
+    .card {
+
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+
+    }
+
+    .ok {
+
+      color: green;
+
+    }
+
+    .error {
+
+      color: red;
+
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div id="app">
+
+    Cargando...
+
+  </div>
+
+
+  <script>
+
+    const API =
+      "https://script.google.com/macros/s/TU_API/exec";
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const token =
+      params.get("t");
+
+    load();
+
+
+    async function load() {
+
+      try {
+
+        const r =
+          await fetch(
+
+            API +
+            "?t=" + token +
+
+            "&agent=" +
+            encodeURIComponent(
+              navigator.userAgent
+            )
+
+          );
+
+        const data =
+          await r.json();
+
+        render(data);
+
+      } catch (e) {
+
+        document.getElementById(
+          "app"
+        ).innerHTML =
+          "Error servidor";
+
+      }
+
+    }
+
+
+    function render(res) {
+
+      if (!res.ok) {
+
+        document.getElementById(
+          "app"
+        ).innerHTML =
+          "<h1 class='error'>Documento inválido</h1>";
+
+        return;
+
+      }
+
+
+      let d = res.data;
+
+
+      document.getElementById(
+        "app"
+      ).innerHTML = `
+
+<div class='card'>
+
+<h1 class='ok'>
+✓ Documento válido
+</h1>
+
+<p>
+
+Código:
+${d.Código}
+
+</p>
+
+<p>
+
+Estado:
+${d.Estado}
+
+</p>
+
+<p>
+
+Fecha:
+${d.Fecha}
+
+</p>
+
+<p>
+
+Versión:
+${d.Versión}
+
+</p>
+
+<p>
+
+Observación:
+${d.Observación}
+
+</p>
+
+<a href="${d.PDF_URL}">
+Descargar PDF
+</a>
+
+</div>
+
+`;
+
+    }
+
+  </script>
+
+</body>
+
+</html>
