@@ -1,177 +1,244 @@
 <!DOCTYPE html>
-
 <html>
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <title>Validación Documento</title>
+<title>
+Validación documento
+</title>
 
-  <style>
-    body {
+<style>
 
-      font-family: Arial;
-      padding: 40px;
-      max-width: 700px;
-      margin: auto;
+body{
 
-    }
+font-family:Arial;
 
-    .card {
+max-width:800px;
 
-      padding: 30px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
+margin:auto;
 
-    }
+padding:30px;
 
-    .ok {
+background:#f5f5f5;
 
-      color: green;
+}
 
-    }
+.card{
 
-    .error {
+background:white;
 
-      color: red;
+padding:30px;
 
-    }
-  </style>
+border-radius:12px;
+
+box-shadow:
+0 2px 10px rgba(
+0,0,0,.1
+);
+
+}
+
+.ok{
+
+color:green;
+
+}
+
+.error{
+
+color:red;
+
+}
+
+p{
+
+margin:10px 0;
+
+}
+
+</style>
 
 </head>
 
 <body>
 
-  <div id="app">
+<div id="app">
 
-    Cargando...
+Cargando...
 
-  </div>
+</div>
 
+<script>
 
-  <script>
-
-    const API = "https://script.google.com/macros/s/AKfycbyXnBswR6mQDPE9fz-BAra21MCNXZNEPBEmNGHP58PidGGhZTIZ7yIJPPAwwfCrLZ3NsA/exec";
-
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
-
-    const token =
-      params.get("t");
-
-    load();
+const API=
+"https://script.google.com/macros/s/AKfycbyXnBswR6mQDPE9fz-BAra21MCNXZNEPBEmNGHP58PidGGhZTIZ7yIJPPAwwfCrLZ3NsA/exec";
 
 
-    async function load() {
-
-      try {
-
-        const r =
-          await fetch(
-
-            API +
-            "?t=" + token +
-
-            "&agent=" +
-            encodeURIComponent(
-              navigator.userAgent
-            )
-
-          );
-
-        const data =
-          await r.json();
-
-        render(data);
-
-      } catch (e) {
-
-        document.getElementById(
-          "app"
-        ).innerHTML =
-          "Error servidor";
-
-      }
-
-    }
+const params=
+new URLSearchParams(
+window.location.search
+);
 
 
-    function render(res) {
-
-      if (!res.ok) {
-
-        document.getElementById(
-          "app"
-        ).innerHTML =
-          "<h1 class='error'>Documento inválido</h1>";
-
-        return;
-
-      }
+const token=
+params.get("t");
 
 
-      let d = res.data;
+if(!token){
+
+document
+.getElementById(
+"app"
+)
+
+.innerHTML=
+
+"<h1>QR inválido</h1>";
+
+}else{
+
+load();
+
+}
 
 
-      document.getElementById(
-        "app"
-      ).innerHTML = `
 
-<div class='card'>
+async function load(){
 
-<h1 class='ok'>
-✓ Documento válido
+try{
+
+const response=
+await fetch(
+
+API+
+
+"?t="+token+
+
+"&agent="+
+
+encodeURIComponent(
+navigator.userAgent
+)
+
+);
+
+const data=
+await response.json();
+
+render(data);
+
+}catch(error){
+
+document
+.getElementById(
+"app"
+)
+
+.innerHTML=
+
+"<h1 class='error'>Error servidor</h1>";
+
+}
+
+}
+
+
+
+function render(res){
+
+if(!res.ok){
+
+document
+.getElementById(
+"app"
+)
+
+.innerHTML=`
+
+<div class=card>
+
+<h1 class=error>
+
+Documento inválido
+
 </h1>
 
 <p>
 
+${res.message}
+
+</p>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+let d=res.data;
+
+
+document
+.getElementById(
+"app"
+)
+
+.innerHTML=`
+
+<div class=card>
+
+<h1 class=ok>
+
+✓ Documento válido
+
+</h1>
+
+<p>
 Código:
 ${d.Código}
-
 </p>
 
 <p>
-
 Estado:
 ${d.Estado}
-
 </p>
 
 <p>
-
 Fecha:
 ${d.Fecha}
-
 </p>
 
 <p>
-
 Versión:
 ${d.Versión}
-
 </p>
 
 <p>
-
 Observación:
 ${d.Observación}
-
 </p>
 
-<a href="${d.PDF_URL}">
+<a
+href="${d.PDF_URL}"
+target=_blank
+>
+
 Descargar PDF
+
 </a>
 
 </div>
 
 `;
 
-    }
+}
 
-  </script>
+</script>
 
 </body>
 
