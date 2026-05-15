@@ -1,219 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Validación Documento</title>
-
-<style>
-
-body{
-
-font-family:Arial;
-
-padding:30px;
-
-max-width:800px;
-
-margin:auto;
-
-background:#f4f4f4;
-
-}
-
-.card{
-
-background:white;
-
-padding:30px;
-
-border-radius:10px;
-
-box-shadow:
-0 2px 10px rgba(0,0,0,.1);
-
-}
-
-.ok{
-
-color:green;
-
-}
-
-.error{
-
-color:red;
-
-}
-
-</style>
-
+  <meta charset="UTF-8">
+  <title>Validación Documento</title>
+  <style>
+    body { font-family: Arial; padding: 30px; max-width: 800px; margin: auto; background: #f4f4f4; }
+    .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.1); }
+    .ok { color: green; }
+    .error { color: red; }
+  </style>
 </head>
-
 <body>
-
-<div id=app>
-
-Cargando...
-
-</div>
-
-<script>
-
-const API=
-
-"https://script.google.com/macros/s/AKfycbzpr2TgMyw64ouBj2r_NnkD87VLrR8nVuSDTntT4-CWSDRtRHRkJvi0zio3J-Wu49sICg/exec";
-
-
-const token=
-
-new URLSearchParams(
-
-window.location.search
-
-).get("t");
-
-
-if(!token){
-
-document
-.getElementById(
-"app"
-)
-
-.innerHTML=
-
-"<h1>QR inválido</h1>";
-
-}else{
-
-load();
-
-}
-
-
-async function load(){
-
-try{
-
-const r=
-
-await fetch(
-
-API+
-
-"?t="+token+
-
-"&agent="+
-
-encodeURIComponent(
-navigator.userAgent
-)
-
-);
-
-
-const data=
-await r.json();
-
-render(data);
-
-}catch{
-
-document
-.getElementById(
-"app"
-)
-
-.innerHTML=
-
-"<h1>Error servidor</h1>";
-
-}
-
-}
-
-
-function render(res){
-
-if(!res.ok){
-
-document
-.getElementById(
-"app"
-)
-
-.innerHTML=`
-
-<div class=card>
-
-<h1 class=error>
-
-Documento inválido
-
-</h1>
-
-<p>
-
-${res.message}
-
-</p>
-
-</div>
-
-`;
-
-return;
-
-}
-
-
-const d=
-res.data;
-
-
-document
-.getElementById(
-"app"
-)
-
-.innerHTML=`
-
-<div class=card>
-
-<h1 class=ok>
-
-✓ Documento válido
-
-</h1>
-
-<p>Código: ${d.Código}</p>
-
-<p>Estado: ${d.Estado}</p>
-
-<p>Fecha: ${d.Fecha}</p>
-
-<p>Versión: ${d.Versión}</p>
-
-<p>Observación:${d.Observación}</p>
-
-<br>
-
-<a
-href="${d.PDF_URL}"
-target="_blank">
-
-Descargar PDF
-
-</a>
-
-</div>
-
-`;
-
-}
-
-</script>
-
+  <div id="app">Cargando...</div>
+  <script>
+    const API = "https://script.google.com/macros/s/AKfycbzpr2TgMyw64ouBj2r_NnkD87VLrR8nVuSDTntT4-CWSDRtRHRkJvi0zio3J-Wu49sICg/exec";
+    const token = new URLSearchParams(window.location.search).get("t");
+    if (!token) document.getElementById("app").innerHTML = "<h1>QR inválido</h1>";
+    else load();
+
+    async function load() {
+      try {
+        const r = await fetch(API + "?t=" + token + "&agent=" + encodeURIComponent(navigator.userAgent));
+        const data = await r.json();
+        render(data);
+      } catch { document.getElementById("app").innerHTML = "<h1>Error servidor</h1>"; }
+    }
+
+    function render(res) {
+      if (!res.ok) {
+        document.getElementById("app").innerHTML = `<div class="card"><h1 class="error">Documento inválido</h1><p>${res.message}</p></div>`;
+        return;
+      }
+      const d = res.data;
+      document.getElementById("app").innerHTML = `
+        <div class="card">
+          <h1 class="ok">✓ Documento válido</h1>
+          <p>Código: ${d.Código}</p>
+          <p>Estado: ${d.Estado}</p>
+          <p>Fecha: ${d.Fecha}</p>
+          <p>Versión: ${d.Versión}</p>
+          <a href="${d.PDF_URL}" target="_blank">Descargar PDF</a>
+        </div>
+      `;
+    }
+  </script>
 </body>
-
 </html>
