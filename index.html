@@ -6,7 +6,9 @@
 <meta charset="UTF-8">
 
 <title>
-Validación documento
+
+Verificación documento
+
 </title>
 
 <style>
@@ -15,13 +17,13 @@ body{
 
 font-family:Arial;
 
-max-width:800px;
-
-margin:auto;
+background:#f5f5f5;
 
 padding:30px;
 
-background:#f5f5f5;
+max-width:800px;
+
+margin:auto;
 
 }
 
@@ -31,7 +33,7 @@ background:white;
 
 padding:30px;
 
-border-radius:12px;
+border-radius:10px;
 
 box-shadow:
 0 2px 10px rgba(
@@ -52,37 +54,35 @@ color:red;
 
 }
 
-p{
-
-margin:10px 0;
-
-}
-
 </style>
 
 </head>
 
 <body>
 
-<div id="app">
+<div id=app>
 
 Cargando...
 
 </div>
 
+
 <script>
 
 const API=
+
 "https://script.google.com/macros/s/AKfycbyXnBswR6mQDPE9fz-BAra21MCNXZNEPBEmNGHP58PidGGhZTIZ7yIJPPAwwfCrLZ3NsA/exec";
 
 
 const params=
+
 new URLSearchParams(
 window.location.search
 );
 
 
 const token=
+
 params.get("t");
 
 
@@ -109,7 +109,8 @@ async function load(){
 
 try{
 
-const response=
+const r=
+
 await fetch(
 
 API+
@@ -119,17 +120,24 @@ API+
 "&agent="+
 
 encodeURIComponent(
+
 navigator.userAgent
+
 )
 
 );
 
+
 const data=
-await response.json();
 
-render(data);
+await r.json();
 
-}catch(error){
+
+render(
+data
+);
+
+}catch(e){
 
 document
 .getElementById(
@@ -138,7 +146,7 @@ document
 
 .innerHTML=
 
-"<h1 class='error'>Error servidor</h1>";
+"<h1 class=error>Error servidor</h1>";
 
 }
 
@@ -180,7 +188,8 @@ return;
 }
 
 
-let d=res.data;
+const d=
+res.data;
 
 
 document
@@ -199,33 +208,45 @@ document
 </h1>
 
 <p>
+
 Código:
 ${d.Código}
+
 </p>
 
 <p>
+
 Estado:
 ${d.Estado}
+
 </p>
 
 <p>
+
 Fecha:
 ${d.Fecha}
+
 </p>
 
 <p>
+
 Versión:
 ${d.Versión}
+
 </p>
 
 <p>
+
 Observación:
 ${d.Observación}
+
 </p>
+
+<br>
 
 <a
 href="${d.PDF_URL}"
-target=_blank
+target="_blank"
 >
 
 Descargar PDF
