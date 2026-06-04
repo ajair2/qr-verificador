@@ -1,259 +1,241 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=yes"
-    />
-    <title>Validador de Documentos | INACAL</title>
-
-    <!-- Metadatos para compartir en redes sociales -->
-    <meta
-      property="og:title"
-      content="Verificador de Autenticidad de Documentos"
-    />
-    <meta
-      property="og:description"
-      content="Valide la autenticidad de informes de laboratorio mediante código QR. Sistema oficial INACAL."
-    />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:image"
-      content="https://ajair2.github.io/qr-verificador/og-image.png"
-    />
-    <meta name="twitter:card" content="summary_large_image" />
-
-    <!-- Favicons (mantén los tuyos) -->
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-        font-family:
-          "Inter",
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        min-height: 100vh;
-        padding: 2rem 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .container {
-        max-width: 800px;
-        width: 100%;
-        margin: 0 auto;
-      }
-      .card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(2px);
-        border-radius: 2rem;
-        box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-        transition: transform 0.2s;
-      }
-      .card-header {
-        background: #1e2a3e;
-        padding: 1.5rem 2rem;
-        color: white;
-        text-align: center;
-      }
-      .card-header h1 {
-        font-weight: 600;
-        font-size: 1.8rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-      }
-      .card-header h1 i {
-        color: #4c9aff;
-        font-size: 2rem;
-      }
-      .card-header p {
-        margin-top: 0.5rem;
-        opacity: 0.8;
-        font-size: 0.95rem;
-      }
-      .card-body {
-        padding: 2rem;
-      }
-      .status-icon {
-        text-align: center;
-        font-size: 4rem;
-        margin-bottom: 1rem;
-      }
-      .valid {
-        color: #10b981;
-      }
-      .invalid {
-        color: #ef4444;
-      }
-      .info {
-        color: #3b82f6;
-      }
-      .doc-details {
-        background: #f8fafc;
-        border-radius: 1.5rem;
-        padding: 1rem;
-        margin-top: 1rem;
-      }
-      .doc-details p {
-        margin: 0.75rem 0;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-        gap: 0.5rem;
-        border-bottom: 1px solid #e2e8f0;
-        padding-bottom: 0.5rem;
-      }
-      .doc-details strong {
-        min-width: 100px;
-        color: #1e293b;
-      }
-      .doc-details span {
-        color: #334155;
-        word-break: break-word;
-      }
-      .download-link {
-        display: inline-block;
-        margin-top: 1rem;
-        background: #3b82f6;
-        color: white;
-        padding: 0.6rem 1.2rem;
-        border-radius: 2rem;
-        text-decoration: none;
-        font-weight: 500;
-        transition: background 0.2s;
-      }
-      .download-link:hover {
-        background: #2563eb;
-      }
-      .download-link.disabled {
-        background: #94a3b8;
-        pointer-events: none;
-        cursor: default;
-      }
-      .error-message {
-        background: #fee2e2;
-        border-left: 4px solid #ef4444;
-        padding: 1rem;
-        border-radius: 1rem;
-        color: #991b1b;
-        margin-top: 1rem;
-      }
-      .loader {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 2rem;
-      }
-      .spinner {
-        width: 2rem;
-        height: 2rem;
-        border: 3px solid #e2e8f0;
-        border-top-color: #3b82f6;
-        border-radius: 50%;
-        animation: spin 0.6s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      footer {
-        text-align: center;
-        margin-top: 2rem;
-        font-size: 0.7rem;
-        color: #475569;
-      }
-      @media (max-width: 600px) {
-        .card-body {
-          padding: 1.5rem;
-        }
-        .doc-details p {
-          flex-direction: column;
-          gap: 0.2rem;
-        }
-        .doc-details strong {
-          min-width: auto;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="card">
-        <div class="card-header">
-          <h1>
-            <i class="fa-solid fa-shield-haltered"></i> Validador de
-            Autenticidad
-          </h1>
-          <p>Documentos oficiales con código QR de verificación</p>
-        </div>
-        <div class="card-body" id="app">
-          <div class="loader">
-            <div class="spinner"></div>
-            <span>Verificando documento...</span>
-          </div>
-        </div>
-      </div>
-      <footer>
-        Sistema de verificación INACAL – Documentos digitales con firma de
-        integridad
-      </footer>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Validador de Documentos | INACAL</title>
+  
+  <!-- Metadatos para compartir en redes sociales -->
+  <meta property="og:title" content="Verificador de Autenticidad de Documentos">
+  <meta property="og:description" content="Valide la autenticidad de informes de laboratorio mediante código QR. Sistema oficial INACAL.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://ajair2.github.io/qr-verificador/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  
+  <!-- Favicons (opcionales, ajusta según tus rutas) -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.ico">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(2px);
+      border-radius: 2rem;
+      box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .card-header {
+      background: #1e2a3e;
+      padding: 1.5rem 2rem;
+      color: white;
+      text-align: center;
+    }
+    .card-header h1 {
+      font-weight: 600;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .card-header h1 i {
+      color: #4c9aff;
+      font-size: 2rem;
+    }
+    .card-header p {
+      margin-top: 0.5rem;
+      opacity: 0.8;
+      font-size: 0.95rem;
+    }
+    .card-body {
+      padding: 2rem;
+    }
+    .status-icon {
+      text-align: center;
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    .valid {
+      color: #10b981;
+    }
+    .invalid {
+      color: #ef4444;
+    }
+    .info {
+      color: #3b82f6;
+    }
+    .doc-details {
+      background: #f8fafc;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .doc-details p {
+      margin: 0.75rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+    }
+    .doc-details strong {
+      min-width: 100px;
+      color: #1e293b;
+    }
+    .doc-details span {
+      color: #334155;
+      word-break: break-word;
+    }
+    .download-link {
+      display: inline-block;
+      margin-top: 1rem;
+      background: #3b82f6;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .download-link:hover {
+      background: #2563eb;
+    }
+    .download-link.disabled {
+      background: #94a3b8;
+      pointer-events: none;
+      cursor: default;
+    }
+    .error-message {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      padding: 1rem;
+      border-radius: 1rem;
+      color: #991b1b;
+      margin-top: 1rem;
+    }
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 2rem;
+    }
+    .spinner {
+      width: 2rem;
+      height: 2rem;
+      border: 3px solid #e2e8f0;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.7rem;
+      color: #475569;
+    }
+    @media (max-width: 600px) {
+      .card-body { padding: 1.5rem; }
+      .doc-details p { flex-direction: column; gap: 0.2rem; }
+      .doc-details strong { min-width: auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h1><i class="fa-solid fa-shield-haltered"></i> Validador de Autenticidad</h1>
+      <p>Documentos oficiales con código QR de verificación</p>
     </div>
+    <div class="card-body" id="app">
+      <div class="loader">
+        <div class="spinner"></div>
+        <span>Verificando documento...</span>
+      </div>
+    </div>
+  </div>
+  <footer>
+    Sistema de verificación INACAL – Documentos digitales con firma de integridad
+  </footer>
+</div>
 
-    <!-- Font Awesome (opcional, mejora visual) -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 
-    <script>
-      (function () {
-        // Configuración
-        const API_URL =
-          "https://script.google.com/macros/s/AKfycbzAJQOd8pklWH6KLjQnmgZgo8d45p-jWdLmoy3u1ZAXeZp-98YeoM_j3BAyUvlr6QtSew/exec";
+<script>
+  (function() {
+    // Configuración
+    const API_URL = "https://script.google.com/macros/s/AKfycbzAJQOd8pklWH6KLjQnmgZgo8d45p-jWdLmoy3u1ZAXeZp-98YeoM_j3BAyUvlr6QtSew/exec";
+    
+    // Función segura para escapar HTML y evitar XSS
+    function escapeHtml(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
 
-        // Función segura para escapar HTML y evitar XSS
-        function escapeHtml(str) {
-          if (!str) return "";
-          const div = document.createElement("div");
-          div.textContent = str;
-          return div.innerHTML;
+    // Función para formatear fecha ISO a dd-mm-aaaa
+    function formatDate(dateString) {
+      if (!dateString) return '—';
+      try {
+        // Si es string ISO (ej. 2026-06-04T17:46:33.881Z)
+        let date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          // Si no es ISO, intentar parsear como fecha local
+          date = new Date(dateString.replace(/-/g, '/'));
         }
+        if (isNaN(date.getTime())) return dateString; // devolver original si falla
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      } catch (e) {
+        return dateString;
+      }
+    }
 
-        // Obtener token de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get("t");
+    // Obtener token de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('t');
 
-        // Elemento donde renderizaremos
-        const appDiv = document.getElementById("app");
+    // Elemento donde renderizaremos
+    const appDiv = document.getElementById('app');
 
-        if (!token) {
-          renderInvalid(
-            "QR inválido: no se proporcionó token de verificación.",
-          );
-          return;
-        }
+    if (!token) {
+      renderInvalid('QR inválido: no se proporcionó token de verificación.');
+      return;
+    }
 
-        // Función para mostrar error genérico o específico
-        function renderInvalid(message) {
-          appDiv.innerHTML = `
+    // Función para mostrar error genérico o específico
+    function renderInvalid(message) {
+      appDiv.innerHTML = `
         <div class="status-icon invalid">
           <i class="fas fa-times-circle"></i>
         </div>
@@ -263,20 +245,20 @@
         </div>
         <p style="margin-top:1rem; text-align:center;">Verifique que el código QR sea correcto o contacte al emisor del documento.</p>
       `;
-        }
+    }
 
-        function renderSuccess(data) {
-          // Sanitizar cada campo (por si acaso)
-          const codigo = escapeHtml(data.Código || "—");
-          const estado = escapeHtml(data.Estado || "—");
-          const fecha = escapeHtml(data.Fecha || "—");
-          const version = escapeHtml(data.Versión || "—");
-          const pdfUrl = data.PDF_URL ? data.PDF_URL.trim() : "";
-
-          const hasValidPdf =
-            pdfUrl && pdfUrl.startsWith("https://drive.google.com/");
-
-          appDiv.innerHTML = `
+    function renderSuccess(data) {
+      // Sanitizar cada campo
+      const codigo = escapeHtml(data.Código || '—');
+      const estado = escapeHtml(data.Estado || '—');
+      const fechaRaw = data.Fecha || '—';
+      const fechaFormateada = formatDate(fechaRaw);
+      const version = escapeHtml(data.Versión || '—');
+      const pdfUrl = data.PDF_URL ? data.PDF_URL.trim() : '';
+      
+      const hasValidPdf = pdfUrl && pdfUrl.startsWith('https://drive.google.com/');
+      
+      appDiv.innerHTML = `
         <div class="status-icon valid">
           <i class="fas fa-check-circle"></i>
         </div>
@@ -284,64 +266,54 @@
         <div class="doc-details">
           <p><strong>Código del informe:</strong> <span>${codigo}</span></p>
           <p><strong>Estado:</strong> <span class="valid">${estado}</span></p>
-          <p><strong>Fecha de emisión:</strong> <span>${fecha}</span></p>
+          <p><strong>Fecha de emisión:</strong> <span>${escapeHtml(fechaFormateada)}</span></p>
           <p><strong>Versión:</strong> <span>${version}</span></p>
         </div>
         <div style="text-align:center; margin-top:1.5rem;">
-          ${
-            hasValidPdf
-              ? `<a href="${escapeHtml(pdfUrl)}" target="_blank" class="download-link" rel="noopener noreferrer">
+          ${hasValidPdf ? 
+            `<a href="${escapeHtml(pdfUrl)}" target="_blank" class="download-link" rel="noopener noreferrer">
                <i class="fas fa-download"></i> Descargar PDF original
-             </a>`
-              : `<span class="download-link disabled">
+             </a>` : 
+            `<span class="download-link disabled">
                <i class="fas fa-ban"></i> PDF no disponible
              </span><p style="font-size:0.8rem; margin-top:0.5rem; color:#ef4444;">El documento original no se encuentra en el repositorio. Contacte al administrador.</p>`
           }
         </div>
       `;
+    }
+
+    // Llamada a la API
+    async function load() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        
+        const response = await fetch(`${API_URL}?t=${encodeURIComponent(token)}&agent=${encodeURIComponent(navigator.userAgent)}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+        const result = await response.json();
+        
+        if (!result.ok) {
+          const errorMsg = result.message || result.error || 'Documento no encontrado';
+          renderInvalid(errorMsg);
+        } else {
+          renderSuccess(result.data);
         }
-
-        // Llamada a la API
-        async function load() {
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
-            const response = await fetch(
-              `${API_URL}?t=${encodeURIComponent(token)}&agent=${encodeURIComponent(navigator.userAgent)}`,
-              {
-                signal: controller.signal,
-              },
-            );
-            clearTimeout(timeoutId);
-
-            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-            const result = await response.json();
-
-            if (!result.ok) {
-              // Si el servidor devuelve un mensaje de error específico
-              const errorMsg =
-                result.message || result.error || "Documento no encontrado";
-              renderInvalid(errorMsg);
-            } else {
-              renderSuccess(result.data);
-            }
-          } catch (err) {
-            console.error("Verification error:", err);
-            if (err.name === "AbortError") {
-              renderInvalid(
-                "La solicitud ha tardado demasiado. Verifique su conexión o intente más tarde.",
-              );
-            } else {
-              renderInvalid(
-                "Error al conectar con el servidor de verificación. Intente nuevamente.",
-              );
-            }
-          }
+      } catch (err) {
+        console.error('Verification error:', err);
+        if (err.name === 'AbortError') {
+          renderInvalid('La solicitud ha tardado demasiado. Verifique su conexión o intente más tarde.');
+        } else {
+          renderInvalid('Error al conectar con el servidor de verificación. Intente nuevamente.');
         }
+      }
+    }
 
-        load();
-      })();
-    </script>
-  </body>
+    load();
+  })();
+</script>
+</body>
 </html>
